@@ -1,5 +1,9 @@
-
-
+//create map
+var myMap = L.map("map", {
+    center: [44.58, -103.46],
+    zoom: 3,
+});
+//magnitude color
 function chooseColor(magnitude) {
     if (magnitude < 1) {
         return "#32CD32";
@@ -20,7 +24,7 @@ function chooseColor(magnitude) {
         return "#8B0000";
     }
 }
-
+//magnitude size
 function chooseRadius(magnitude) {
     if (magnitude < 1) {
         return 3;
@@ -41,14 +45,16 @@ function chooseRadius(magnitude) {
         return 15;
     }
 }
+//initiate variable to hold layers
 var geojson;
-// Grabbing our GeoJSON data..
+var overlayMaps = {};
+var baseMaps = {};
+var control;
+var check = 0;
+// 1st data earthquakes
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
 d3.json(url).then(function (data) {
-    // Creating a geoJSON layer with the retrieved data
-
-
     // Define variables for our tile layers
     var satellite = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
         attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
@@ -72,28 +78,26 @@ d3.json(url).then(function (data) {
     });
 
     // Only one base layer can be shown at a time
-    var baseMaps = {
+    baseMaps = {
         Satellite: satellite,
         GreyScales: light,
         Outdoors: outdoors
     };
 
-
+    // marker as circles
     var geojsonMarkerOptions = {
         weight: 1,
         opacity: 1,
         fillOpacity: 0.9
     };
 
-
+    //geojson layer
     geojson = L.geoJson(data, {
-        // Style each feature (in this case a country)
-
+        //color and radius based on magnitude
         style: function (feature) {
             return {
                 color: "white",
                 radius: chooseRadius(feature.properties.mag),
-                // Call the chooseColor function to decide which color to color our country (color based on country)
                 fillColor: chooseColor(feature.properties.mag),
                 fillOpacity: 0.7,
                 weight: 1,
@@ -108,47 +112,36 @@ d3.json(url).then(function (data) {
         onEachFeature: function (feature, layer) {
             // Set mouse events to change map styling
             layer.on({
-                // When a user's mouse touches a map feature, the mouseover event calls this function, that feature's opacity changes to 90% so that it stands out
                 mouseover: function (event) {
                     layer = event.target;
                     layer.setStyle({
                         fillOpacity: 0.5
                     });
                 },
-                // When the cursor no longer hovers over a map feature - when the mouseout event occurs - the feature's opacity reverts back to 50%
                 mouseout: function (event) {
                     layer = event.target;
                     layer.setStyle({
                         fillOpacity: 0.9
                     });
                 },
-                // When a feature (country) is clicked, it is enlarged to fit the screen
-                click: function (event) {
-
-                }
             });
             // Giving each feature a pop-up with information pertinent to it
             layer.bindPopup("<h1>" + feature.properties.title + "</h1><h5>Time " + new Date(feature.properties.time) + "</h5>");
-
         }
     });
 
     // Overlays that may be toggled on or off
-    var overlayMaps = {
-        Earthquakes: geojson
-    };
+    overlayMaps.Earthquakes = geojson;
 
-    // Creating map object
-    var myMap = L.map("map", {
-        center: [44.58, -103.46],
-        zoom: 3,
-        layers: [satellite, geojson]
-    });
-
-    L.control.layers(baseMaps, overlayMaps).addTo(myMap);
-
-
-
+    // add default layers to map
+    satellite.addTo(myMap);
+    geojson.addTo(myMap);
+    // if both data loaded , enable control button
+    check += 1;
+    if (check == 2) {
+        L.control.layers(baseMaps, overlayMaps).addTo(myMap);
+    }
+    // create legend layer
     var legend = L.control({ position: 'bottomright' });
 
     legend.onAdd = function (map) {
@@ -166,11 +159,11 @@ d3.json(url).then(function (data) {
 
         return div;
     };
-
+//add layer
     legend.addTo(myMap);
 
 });
-
+//color for legen layer
 function getColor(d) {
     return d <= 1 ? '#32CD32' :
         d <= 2 ? '#ADFF2F' :
@@ -178,3 +171,30 @@ function getColor(d) {
                 d <= 4 ? '#FFA500' :
                     d <= 5 ? '#FF5C00' : '#8B0000';
 }
+
+//2nd data
+var plates = "static/js/PB2002_steps.json";
+var boundary = "static/js/PB2002_boundaries.json";
+var orogens = "static/js/PB2002_orogens.json";
+var step = "static/js/PB2002_steps.json";
+
+//load tetonic plates data
+d3.json(plates).then(function (data) {
+    //geojson layers
+    geojson = L.geoJson(data, {
+        // Style each feature (in this case a country)
+        style: {
+            "color": "#ff7800",
+            "weight": 2,
+            "opacity": 0.65
+        },
+    });
+    // add default layers to map
+    overlayMaps.Fault_lines = geojson;
+    geojson.addTo(myMap);
+    //if both data loaded, add button control, othewise wait.
+    check += 1;
+    if (check == 2) {
+        L.control.layers(baseMaps, overlayMaps).addTo(myMap);
+    }
+});
