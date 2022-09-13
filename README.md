@@ -1,3 +1,7 @@
-# leaflet-challenge
-# Data visualisation of last 7 days earthquakes and tectonic plates
-We can see most of the earthquakes happened along the tectonic plates boundary.
+In this activity, I built an interactive dashboard to explore the [Belly Button Biodiversity dataset](http://robdunnlab.com/projects/belly-button-biodiversity/), which catalogues the microbes that colonise human navels.
+
+The dashboard shows the background of each individual and what type of bacteria was found in that person's belly.
+
+{{< figure src="/images/plotly.gif" title="Interactive dashboard" >}}
+
+Visit https://datng87.github.io/plotly-challenge/ for a live demo website. 
