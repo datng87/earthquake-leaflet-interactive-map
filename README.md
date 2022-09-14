@@ -4,4 +4,4 @@ In this activity, I used the leaflet library to visualise the worldwide earthqua
 
 We can see clearly that most earthquakes happen at the boundaries where the plates meet. Earthquakes still occur within plates, but the frequency is much lesser.
 
-Visit **https://datng87.github.io/leaflet-challenge/** for a live demo website.
+Visit **https://datng87.github.io/leaflet-interactive-map/** for a live demo website.
