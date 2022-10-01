@@ -19,4 +19,4 @@ We can see clearly that most earthquakes happen at the boundaries where the plat
 
 I hope you enjoy this simple but powerful visualisation.
 
-Visit **https://datng87.github.io/leaflet-interactive-map/** for a live demo website.
+Visit **https://datng87.github.io/earthquake-leaflet-interactive-map/** for a live demo website.
